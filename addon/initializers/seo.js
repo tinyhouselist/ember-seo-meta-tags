@@ -72,17 +72,23 @@ Ember.Route.reopen({
       // If title or metaTags are defined in route as properties, then they will be picked up from here.
       this.notifyPropertyChange(type);
     }
-    else if ( Ember.isEqual(type, 'title') ){
-      // Set default title as routeName if no title is provided. Meta tags will remain null if not provided.
-      value = get(this, 'routeName');
-      set(this, type,  value);
+    else {
+      value = get(this, `tagsData._base.${type}`);
+      set(this, type, value);
     }
   },
   readServiceData: function(){
     // Seed title and Meta tags on load
-    var routeName, seedTitle, seedMetaTags;
+    var routeName, tagsData, seedTitle, seedMetaTags;
     routeName = get(this, 'routeName');
-    seedTitle = get(this, `tagsData.${routeName}.title`);
+    tagsData = get(this, 'tagsData');
+
+    seedTitle = null;
+
+    if (tagsData[routeName] && tagsData[routeName].title) {
+      seedTitle = tagsData[routeName].title;
+    }
+
     seedMetaTags = get(this, `tagsData.${routeName}.metaTags`);
     this.initRouteData('title', seedTitle);
     this.initRouteData('metaTags', seedMetaTags);
