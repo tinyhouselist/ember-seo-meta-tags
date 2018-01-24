@@ -40,10 +40,15 @@ Ember.Route.reopen({
         content = get(tag, 'tagContent');
       }
       name = get(tag, 'tagName');
-      return that.setMetaTag(name, content);
+      type = get(tag, 'tagType');
+      return that.setMetaTag(name, content, type);
     });
   },
-  getTagAttribute: function(name){
+  getTagAttribute: function(name, type){
+    if (type && type.length) {
+      return type;
+    }
+
     var openGraph, swiftType;
     openGraph = /^og:/;
     swiftType = /^st:/; //https://swiftype.com/documentation/meta_tags
@@ -52,9 +57,9 @@ Ember.Route.reopen({
     }
     return 'name';
   },
-  setMetaTag: function(name, content) {
+  setMetaTag: function(name, content, type) {
     var attr;
-    attr = this.getTagAttribute(name);
+    attr = this.getTagAttribute(name, type);
     if (Ember.$(`meta[${attr}='${name}']`).length > 0) {
       return Ember.$(`meta[${attr}='${name}']`).attr('content', content);
     } else {
